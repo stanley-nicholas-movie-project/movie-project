@@ -20,16 +20,17 @@ function setMovies(){
     $(`#moviesList`).addClass(`blur`);
     $(`#loadingBox`).removeClass("invisible");
     setTimeout(() => {
-    fetch(`${dbURL}`).then((response) => response.json()).then((data) => {
-        $(`#moviesList`).removeClass(`blur`);
-        $(`#loadingBox`).addClass("invisible");
-        let fData = data.filter((m) => {
-            return (m.id != null || m.id !== undefined);
-        }); movies = fData;
-        setUniqueId();
-        return fData;
-    }).then(() => {displayMovies(movies);
-    });
+        fetch(`${dbURL}`).then((response) => response.json()).then((data) => {
+            $(`#moviesList`).removeClass(`blur`);
+            $(`#loadingBox`).addClass("invisible");
+            let fData = data.filter((m) => {
+                return (m.id != null || m.id !== undefined);
+            }); movies = fData;
+            setUniqueId();
+            console.log(uniqueId);
+            return fData;
+        }).then(() => {displayMovies(movies);
+        });
     }, 2000);
 }
 
@@ -42,31 +43,14 @@ function setMovies(){
 //             console.log(json);
 // }
 
-function displayMovies(movies) {
-    let image;
+function displayMovies(movies){
     $(`#movieCards`).empty();
     movies.forEach((m) => {
-        let requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-        fetch(`http://www.omdbapi.com/?apikey=91940b5a&t=${m.title}&plot=short`, requestOptions)
-            .then(response => response.json())
-            // .catch(error => url = "../assets/N:A.jpeg")
-            .then((m) => {
-                if (m.Error === "Movie not found!") {
-                    
-                    image = "../assets/N:A.jpeg"
-                }
-                else{
-                    image = m.Poster
-                }
-                
-            }).then(() => {
-            let stars = ratingStars(m.rating);
-            $(`#movieCards`).append(`<div class="col my-3 ">
+        console.log(m.rating);
+        let stars = ratingStars(m.rating);
+        $(`#movieCards`).append(`<div class="col my-3 ">
                 <div class="card click-me" id="${m.id}">
-                    <img src="${image}" class="card-img-top img-fluid" alt="">
+                    <img src="https://i.ebayimg.com/images/g/GtEAAOSw1W9eN1cY/s-l1600.jpg" class="card-img-top img-fluid" alt="">
                     <div class="card-body">
                         <h5 class="card-title">${m.title}</h5>
                         <p class="card-text">${m.plot}</p>
@@ -74,7 +58,7 @@ function displayMovies(movies) {
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Genre: ${m.genre}</li>
                         <li class="list-group-item">Director: ${m.director}</li>
-                        <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src="${stars}" class="img-fluid" alt=""></li>
+                        <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src=${stars} class="img-fluid" alt=""></li>
                     </ul>
                     <div class="card-body d-flex justify-content-between">
                         <a href="#" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</a>
@@ -82,15 +66,11 @@ function displayMovies(movies) {
                     </div>
                 </div>
             </div>`)
-        })
-            .then(() => {
-                updateEventHandlers()
-            })
     })
-    
-};
+    updateEventHandlers()};
 
 setMovies();
+
 
 //functions for sorting
 
@@ -122,7 +102,7 @@ $(`#movieSearchByTitle`).keyup(function(){
 $(`#movieSearchByRating`).change(function(){
     searchRating = $(this).val();
     searchByTitle($(`#movieSearchByTitle`).val());
-
+    
 })
 
 
@@ -152,7 +132,7 @@ function updateEventHandlers(){
         $(`#editMovieModal`).addClass(`blur`);
         $(`#loadingBox`).removeClass("invisible");
         setTimeout(() => {
-        editModalPreload();
+            editModalPreload();
             $(`#editMovieModal`).removeClass(`blur`);
             $(`#loadingBox`).addClass("invisible");
         }, 2000);
@@ -164,18 +144,18 @@ function deleteMovie(id){
     fetch(`${dbURL}/${id}`, {
         method: `DELETE`
     }).then(() => {
-            setMovies();
+        setMovies();
     })
 }
 
 //function to open edit modal with pre-loaded values
 function editModalPreload(){
-        $("#editMovieTitle").val(selectedTitle)
-        $("#editMovieGenre").val(selectedGenre)
-        $("#editMovieRating").val(selectedRating)
-        $("#editMovieDirector").val(selectedDirector)
-        $("#editMovieDescription").val(selectedPlot)
-        $("#editRatingOutput").val(selectedRating)
+    $("#editMovieTitle").val(selectedTitle)
+    $("#editMovieGenre").val(selectedGenre)
+    $("#editMovieRating").val(selectedRating)
+    $("#editMovieDirector").val(selectedDirector)
+    $("#editMovieDescription").val(selectedPlot)
+    $("#editRatingOutput").val(selectedRating)
 }
 
 function sendEditedMovie(){
@@ -193,7 +173,7 @@ function sendEditedMovie(){
 
 //function to update a movie object on the db
 function changeData( id, title, director, rating, genre, plot){
-
+    
     let raw =
         {
             title: title,
@@ -204,15 +184,15 @@ function changeData( id, title, director, rating, genre, plot){
             id: id
         }
     ;
-
+    
     let requestOptions = {
         method: 'PUT',
         headers: {
-        'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(raw),
     };
-
+    
     fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${selectedId}`, requestOptions)
         .then( response => setMovies());
 }
@@ -227,7 +207,7 @@ $("#editMovieSubmit").click(function(){
 
 //function to create a new movie object
 function addNewMovie(url, title, director, rating, genre, plot){
-
+    
     let raw =
         {
             title: title,
@@ -238,7 +218,7 @@ function addNewMovie(url, title, director, rating, genre, plot){
             id: uniqueId,
         }
     ;
-
+    
     let requestOptions = {
         method: 'POST',
         headers: {
@@ -247,8 +227,8 @@ function addNewMovie(url, title, director, rating, genre, plot){
         body: JSON.stringify(raw),
     };
     console.log(raw);
-
-
+    
+    
     fetch(url, requestOptions)
         .then( response => setMovies());
 }
@@ -271,9 +251,15 @@ $("#addMovieSubmit").click(function(){
 
 //function for a uniqueId
 function setUniqueId(){
-    let temp = movies.filter((n) => n.id);
-    temp.sort();
-    uniqueId = temp[temp.length - 1].id +1;
+    if (movies.length > 0){
+        let temp = movies.filter((n) => n.id);
+        temp.sort();
+        uniqueId = temp[temp.length - 1].id +1;
+    }
+    else{
+        uniqueId = 1;
+    }
+    
 }
 
 //js for movie rating slider number
