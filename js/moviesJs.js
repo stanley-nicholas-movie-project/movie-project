@@ -12,6 +12,7 @@ let movies = [];
 let uniqueId;
 let sortedMovies;
 let searchRating = "all";
+let searchGenre = "all";
 
 
 
@@ -33,24 +34,15 @@ function setMovies(){
     }, 2000);
 }
 
-// function getPosters(){
-//     $.getJSON("https://api.themoviedb.org/3/search/movie?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=" + film + "&callback=?",
-//         New
-//     11:08
-//     $.getJSON("https://api.themoviedb.org/3/search/movie?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=" + film + "&callback=?", function(json) {
-//         if (json != "Nothing found."){
-//             console.log(json);
-// }
-
 function displayMovies(movies){
     $(`#movieCards`).empty();
     movies.forEach((m) => {
         let stars = ratingStars(m.rating);
         $(`#movieCards`).append(`<div class="col my-3 ">
-                <div class="card click-me" id="${m.id}">
+                <div class="card click-me h-100" id="${m.id}">
                     <img src="${m.poster}" class="card-img-top img-fluid" alt="">
                     <div class="card-body">
-                        <h5 class="card-title">${m.title}</h5>
+                        <h4 class="card-title">${m.title}</h4>
                         <p class="card-text">${m.plot}</p>
                     </div>
                     <ul class="list-group list-group-flush">
@@ -58,8 +50,8 @@ function displayMovies(movies){
                         <li class="list-group-item">Director: ${m.director}</li>
                         <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src=${stars} class="img-fluid" alt=""></li>
                     </ul>
-                    <div class="card-body d-flex justify-content-between">
-                        <a href="#" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</a>
+                    <div class="card-footer d-flex justify-content-between">
+                        <button type="button" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</button>
                         <button type="button" class="btn btn-danger deleteMovieBtn " data-bs-toggle="modal" data-bs-target="#deleteMovieModal">Delete Movie</button>
                     </div>
                 </div>
@@ -77,6 +69,13 @@ function searchByTitle(searchValue){
     if (searchRating !== "all"){
         sortedMovies = sortedMovies.filter((e) =>{
             if(e.rating === searchRating){
+                return true;
+            }
+        })
+    }
+    if (searchGenre !== "all"){
+        sortedMovies = sortedMovies.filter((e) =>{
+            if(e.genre === searchGenre){
                 return true;
             }
         })
@@ -100,7 +99,11 @@ $(`#movieSearchByTitle`).keyup(function(){
 $(`#movieSearchByRating`).change(function(){
     searchRating = $(this).val();
     searchByTitle($(`#movieSearchByTitle`).val());
-    
+})
+
+$(`#movieSearchByGenre`).change(function(){
+    searchGenre = $(this).val();
+    searchByTitle($(`#movieSearchByTitle`).val());
 })
 
 
@@ -127,12 +130,12 @@ function updateEventHandlers(){
     })
     
     $(".editMovieBtn").click(function(){
-        $(`#editMovieModal`).addClass(`blur`);
-        $(`#loadingBox`).removeClass("invisible");
+        $(`#innerEditMovieModal`).addClass(`blur`);
+        $(`#loadingMovies`).removeClass("invisible");
         setTimeout(() => {
             editModalPreload();
-            $(`#editMovieModal`).removeClass(`blur`);
-            $(`#loadingBox`).addClass("invisible");
+            $(`#innerEditMovieModal`).removeClass(`blur`);
+            $(`#loadingMovies`).addClass("invisible");
         }, 2000);
     })
 };

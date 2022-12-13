@@ -6,3 +6,7 @@ hr.styled {
     border: 5px solid darkblue;
     border-radius: 5px;
 }
+
+.fonts{
+    font-family: 'Merriweather', serif;
+}
