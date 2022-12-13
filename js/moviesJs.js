@@ -10,6 +10,8 @@ let selectedRating;
 let selectedDirector;
 let movies = [];
 let uniqueId;
+let sortedMovies;
+let searchRating;
 
 
 
@@ -27,7 +29,7 @@ function setMovies(){
         setUniqueId();
         console.log(uniqueId);
         return fData;
-    }).then(() => {displayMovies();
+    }).then(() => {displayMovies(movies);
     });
     }, 2000);
 }
@@ -41,7 +43,7 @@ function setMovies(){
 //             console.log(json);
 // }
 
-function displayMovies(){
+function displayMovies(movies){
     $(`#movieCards`).empty();
     console.log(movies);
     movies.forEach((m) => {
@@ -69,6 +71,61 @@ function displayMovies(){
 updateEventHandlers()};
 
 setMovies();
+
+
+//functions for sorting
+
+function searchByTitle(searchValue){
+    sortedMovies = movies;
+    if (searchRating !== "all"){
+        sortedMovies = sortedMovies.filter((e) =>{
+            if(e.rating === searchRating){
+                return true;
+            }
+        })
+    }
+    if(searchValue !== "") {
+        let filter = sortedMovies.filter((m) => {
+            if (m.title.toLowerCase().includes(searchValue.toLowerCase())) {
+                return true;
+            }
+        });
+        displayMovies(filter)
+    }else {
+        displayMovies(sortedMovies)
+    };
+}
+
+$(`#movieSearchByTitle`).keyup(function(){
+    searchByTitle($(this).val())
+})
+
+function searchByRating(searchValue){
+    sortedMovies = movies;
+    if (searchRating !== null){
+        sortedMovies = sortedMovies.filter((e) =>{
+            if(e.rating === searchRating){
+                return true;
+            }
+        })
+    }
+    if(searchValue !== "") {
+        let filter = sortedMovies.filter((m) => {
+            if (m.rating.toLowerCase().includes(searchValue.toLowerCase())) {
+                return true;
+            }
+        });
+        displayMovies(filter)
+    }else {
+        displayMovies(movies)
+    };
+}
+
+$(`#movieSearchByRating`).change(function(){
+    searchRating = $(this).val();
+    searchByTitle($(`#movieSearchByTitle`).val());
+
+})
 
 
 $('#confirmDelete').click(function(){
