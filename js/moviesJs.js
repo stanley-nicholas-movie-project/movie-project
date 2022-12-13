@@ -27,7 +27,6 @@ function setMovies(){
                 return (m.id != null || m.id !== undefined);
             }); movies = fData;
             setUniqueId();
-            console.log(uniqueId);
             return fData;
         }).then(() => {displayMovies(movies);
         });
@@ -46,7 +45,6 @@ function setMovies(){
 function displayMovies(movies){
     $(`#movieCards`).empty();
     movies.forEach((m) => {
-        console.log(m.rating);
         let stars = ratingStars(m.rating);
         $(`#movieCards`).append(`<div class="col my-3 ">
                 <div class="card click-me" id="${m.id}">
@@ -221,7 +219,6 @@ function changeData( id, title, director, rating, genre, plot){
 }
 
 $("#editMovieSubmit").click(function(){
-    console.log("submitted")
     sendEditedMovie();
 })
 
