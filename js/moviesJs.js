@@ -173,31 +173,51 @@ function sendEditedMovie(){
 
 //function to update a movie object on the db
 function changeData( id, title, director, rating, genre, plot){
-    
-    
-    
-    
-    let raw =
-        {
-            title: title,
-            director: director,
-            rating: rating,
-            genre: genre,
-            plot: plot,
-            id: id
-        }
-    ;
-    
+    let poster;
     let requestOptions = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(raw),
+        method: 'GET',
+        redirect: 'follow'
     };
     
-    fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${selectedId}`, requestOptions)
-        .then( response => setMovies());
+    fetch("http://www.omdbapi.com/?apikey=91940b5a&t="+ title, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if (result.Error === "Movie not found!") {
+                
+                poster = "../assets/N:A.jpeg"
+            }
+            else{
+                poster = result.Poster
+            }
+            
+        }).then(()=>{
+        let raw =
+            {
+                title: title,
+                director: director,
+                rating: rating,
+                genre: genre,
+                plot: plot,
+                id: id,
+                poster: poster,
+            }
+        ;
+    
+        let requestOptions = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(raw),
+        };
+    
+        fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${selectedId}`, requestOptions)
+            .then( response => setMovies());
+            
+    })
+    
+    
+    
 }
 
 $("#editMovieSubmit").click(function(){
