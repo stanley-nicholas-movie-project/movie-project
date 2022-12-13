@@ -2,3 +2,7 @@
     filter: blur(5px);
 }
 
+hr.styled {
+    border: 5px solid darkblue;
+    border-radius: 5px;
+}

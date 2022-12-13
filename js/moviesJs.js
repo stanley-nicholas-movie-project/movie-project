@@ -45,9 +45,11 @@ function displayMovies(){
     $(`#movieCards`).empty();
     console.log(movies);
     movies.forEach((m) => {
+        console.log(m.rating);
+        let stars = ratingStars(m.rating);
         $(`#movieCards`).append(`<div class="col my-3 ">
                 <div class="card click-me" id="${m.id}">
-                    <img src="https://i.ebayimg.com/images/g/GtEAAOSw1W9eN1cY/s-l1600.jpg" class="card-img-top fluid" alt="">
+                    <img src="https://i.ebayimg.com/images/g/GtEAAOSw1W9eN1cY/s-l1600.jpg" class="card-img-top img-fluid" alt="">
                     <div class="card-body">
                         <h5 class="card-title">${m.title}</h5>
                         <p class="card-text">${m.plot}</p>
@@ -55,7 +57,7 @@ function displayMovies(){
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Genre: ${m.genre}</li>
                         <li class="list-group-item">Director: ${m.director}</li>
-                        <li class="list-group-item">Rating: ${m.rating}</li>
+                        <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src=${stars} class="img-fluid" alt=""></li>
                     </ul>
                     <div class="card-body d-flex justify-content-between">
                         <a href="#" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</a>
@@ -233,3 +235,31 @@ document.addEventListener("input",
             e.target.form.output.value =
                 parseFloat(e.target.form.editMovieRating.value);
     }, true);
+
+
+//function for ratings stars
+function ratingStars(rating){
+    if(rating == 5){
+        return "../assets/5stars.png"
+    }else if(rating == 4.5){
+        return "../assets/4_5stars.png"
+    }else if(rating == 4){
+        return "../assets/4stars.png"
+    }else if(rating == 3.5){
+        return "../assets/3_5stars.png"
+    }else if(rating == 3){
+        return "../assets/3stars.png"
+    }else if(rating == 2.5){
+        return "../assets/2_5stars.png"
+    }else if(rating == 2){
+        return "../assets/2stars.png"
+    }else if(rating == 1.5){
+        return "../assets/1_5stars.png"
+    }else if(rating == 1){
+        return "../assets/1star.png"
+    }else if(rating == .5){
+        return "../assets/halfStar.png"
+    }else if(rating == 0) {
+        return "../assets/0stars.png"
+    }
+}
