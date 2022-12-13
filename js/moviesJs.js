@@ -50,7 +50,7 @@ function displayMovies(movies){
         let stars = ratingStars(m.rating);
         $(`#movieCards`).append(`<div class="col my-3 ">
                 <div class="card click-me" id="${m.id}">
-                    <img src="https://i.ebayimg.com/images/g/GtEAAOSw1W9eN1cY/s-l1600.jpg" class="card-img-top img-fluid" alt="">
+                    <img src="${m.poster}" class="card-img-top img-fluid" alt="">
                     <div class="card-body">
                         <h5 class="card-title">${m.title}</h5>
                         <p class="card-text">${m.plot}</p>
@@ -207,30 +207,53 @@ $("#editMovieSubmit").click(function(){
 
 //function to create a new movie object
 function addNewMovie(url, title, director, rating, genre, plot){
-    
-    let raw =
-        {
-            title: title,
-            director: director,
-            rating: rating,
-            genre: genre,
-            plot: plot,
-            id: uniqueId,
-        }
-    ;
-    
-    let requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(raw),
+    let poster;
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
     };
-    console.log(raw);
+    
+    fetch("http://www.omdbapi.com/?apikey=91940b5a&t="+ title, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if (result.Error === "Movie not found!") {
+        
+               poster = "../assets/N:A.jpeg"
+            }
+            else{
+                poster = result.Poster
+            }
+        
+        })
+        .then(() => {
+            let raw =
+                {
+                    poster: poster,
+                    title: title,
+                    director: director,
+                    rating: rating,
+                    genre: genre,
+                    plot: plot,
+                    id: uniqueId,
+                    
+                }
+            ;
+    
+            let requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(raw),
+            };
+            console.log(raw);
     
     
-    fetch(url, requestOptions)
-        .then( response => setMovies());
+            fetch(url, requestOptions)
+                .then( response => setMovies());
+        })
+    
+    
 }
 
 function sendNewMovie(){
