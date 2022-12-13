@@ -68,6 +68,12 @@ updateEventHandlers()};
 
 setMovies();
 
+
+$('#confirmDelete').click(function(){
+    deleteMovie(selectedId);
+})
+
+
 //listener to grab info when clicking on a card
 function updateEventHandlers(){
     $(`.click-me`).click(function(event){
@@ -84,9 +90,7 @@ function updateEventHandlers(){
         });
         $(`#toDeleteTitle`).append(`<p>Do you want to delete ${selectedTitle}?</p>`)
     })
-    $('#confirmDelete').click(function(){
-        deleteMovie(selectedId);
-    })
+    
     $(".editMovieBtn").click(function(){
         $(`#editMovieModal`).addClass(`blur`);
         $(`#loadingBox`).removeClass("invisible");
