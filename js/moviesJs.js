@@ -11,7 +11,7 @@ let selectedDirector;
 let movies = [];
 let uniqueId;
 let sortedMovies;
-let searchRating;
+let searchRating = "all";
 
 
 
@@ -27,7 +27,6 @@ function setMovies(){
             return (m.id != null || m.id !== undefined);
         }); movies = fData;
         setUniqueId();
-        console.log(uniqueId);
         return fData;
     }).then(() => {displayMovies(movies);
     });
@@ -43,15 +42,31 @@ function setMovies(){
 //             console.log(json);
 // }
 
-function displayMovies(movies){
+function displayMovies(movies) {
+    let image;
     $(`#movieCards`).empty();
-    console.log(movies);
     movies.forEach((m) => {
-        console.log(m.rating);
-        let stars = ratingStars(m.rating);
-        $(`#movieCards`).append(`<div class="col my-3 ">
+        let requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+        fetch(`http://www.omdbapi.com/?apikey=91940b5a&t=${m.title}&plot=short`, requestOptions)
+            .then(response => response.json())
+            // .catch(error => url = "../assets/N:A.jpeg")
+            .then((m) => {
+                if (m.Error === "Movie not found!") {
+                    
+                    image = "../assets/N:A.jpeg"
+                }
+                else{
+                    image = m.Poster
+                }
+                
+            }).then(() => {
+            let stars = ratingStars(m.rating);
+            $(`#movieCards`).append(`<div class="col my-3 ">
                 <div class="card click-me" id="${m.id}">
-                    <img src="https://i.ebayimg.com/images/g/GtEAAOSw1W9eN1cY/s-l1600.jpg" class="card-img-top img-fluid" alt="">
+                    <img src="${image}" class="card-img-top img-fluid" alt="">
                     <div class="card-body">
                         <h5 class="card-title">${m.title}</h5>
                         <p class="card-text">${m.plot}</p>
@@ -59,7 +74,7 @@ function displayMovies(movies){
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Genre: ${m.genre}</li>
                         <li class="list-group-item">Director: ${m.director}</li>
-                        <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src=${stars} class="img-fluid" alt=""></li>
+                        <li class="list-group-item">Rating: ${m.rating} <img id="ratingStarsImg" src="${stars}" class="img-fluid" alt=""></li>
                     </ul>
                     <div class="card-body d-flex justify-content-between">
                         <a href="#" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</a>
@@ -67,11 +82,15 @@ function displayMovies(movies){
                     </div>
                 </div>
             </div>`)
+        })
+            .then(() => {
+                updateEventHandlers()
+            })
     })
-updateEventHandlers()};
+    
+};
 
 setMovies();
-
 
 //functions for sorting
 
@@ -99,27 +118,6 @@ function searchByTitle(searchValue){
 $(`#movieSearchByTitle`).keyup(function(){
     searchByTitle($(this).val())
 })
-
-function searchByRating(searchValue){
-    sortedMovies = movies;
-    if (searchRating !== null){
-        sortedMovies = sortedMovies.filter((e) =>{
-            if(e.rating === searchRating){
-                return true;
-            }
-        })
-    }
-    if(searchValue !== "") {
-        let filter = sortedMovies.filter((m) => {
-            if (m.rating.toLowerCase().includes(searchValue.toLowerCase())) {
-                return true;
-            }
-        });
-        displayMovies(filter)
-    }else {
-        displayMovies(movies)
-    };
-}
 
 $(`#movieSearchByRating`).change(function(){
     searchRating = $(this).val();
