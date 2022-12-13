@@ -174,6 +174,9 @@ function sendEditedMovie(){
 //function to update a movie object on the db
 function changeData( id, title, director, rating, genre, plot){
     
+    
+    
+    
     let raw =
         {
             title: title,
@@ -208,7 +211,7 @@ $("#editMovieSubmit").click(function(){
 //function to create a new movie object
 function addNewMovie(url, title, director, rating, genre, plot){
     let poster;
-    var requestOptions = {
+    let requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
@@ -251,7 +254,13 @@ function addNewMovie(url, title, director, rating, genre, plot){
     
             fetch(url, requestOptions)
                 .then( response => setMovies());
-        })
+        }).then(()=>{
+        $("#newMovieTitle").val("")
+           $("#newMovieGenre").val("")
+            $("#movieRating").val("")
+           $("#newMovieDirector").val("")
+          $("#newMovieDescription").val("")
+    })
     
     
 }
