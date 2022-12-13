@@ -4,6 +4,10 @@ const dbURL = "https://pine-inexpensive-honeysuckle.glitch.me/movies";
 
 let selectedId;
 let selectedTitle;
+let selectedGenre;
+let selectedPlot;
+let selectedRating;
+let selectedDirector;
 let movies = [];
 let uniqueId;
 
@@ -11,6 +15,9 @@ let uniqueId;
 
 //only returns movies with IDs
 function setMovies(){
+    $(`#moviesList`).addClass(`blur`);
+    $(`#loadingBox`).removeClass("invisible");
+    setTimeout(() => {
     fetch(`${dbURL}`).then((response) => response.json()).then((data) => {
         $(`#moviesList`).removeClass(`blur`);
         $(`#loadingBox`).addClass("invisible");
@@ -22,6 +29,7 @@ function setMovies(){
         return fData;
     }).then(() => {displayMovies();
     });
+    }, 2000);
 }
 
 // function getPosters(){
@@ -49,9 +57,9 @@ function displayMovies(){
                         <li class="list-group-item">Director: ${m.director}</li>
                         <li class="list-group-item">Rating: ${m.rating}</li>
                     </ul>
-                    <div class="card-body">
-                        <a href="#" class="btn btn-primary">Edit Movie</a>
-                        <button type="button" class="btn btn-danger deleteMovieBtn" data-bs-toggle="modal" data-bs-target="#deleteMovieModal">Delete Movie</button>
+                    <div class="card-body d-flex justify-content-between">
+                        <a href="#" class="btn btn-primary editMovieBtn" data-bs-toggle="modal" data-bs-target="#editMovieModal">Edit Movie</a>
+                        <button type="button" class="btn btn-danger deleteMovieBtn " data-bs-toggle="modal" data-bs-target="#deleteMovieModal">Delete Movie</button>
                     </div>
                 </div>
             </div>`)
@@ -68,12 +76,25 @@ function updateEventHandlers(){
         movies.forEach((m) => {
             if(m.id == selectedId) {
                 selectedTitle = m.title;
+                selectedGenre = m.genre;
+                selectedPlot = m.plot;
+                selectedRating = m.rating;
+                selectedDirector = m.director;
             }
         });
-        $(`#toDeleteTitle`).append(`<p>Do you want to delete ${selectedTitle}</p>`)
+        $(`#toDeleteTitle`).append(`<p>Do you want to delete ${selectedTitle}?</p>`)
     })
     $('#confirmDelete').click(function(){
         deleteMovie(selectedId);
+    })
+    $(".editMovieBtn").click(function(){
+        $(`#editMovieModal`).addClass(`blur`);
+        $(`#loadingBox`).removeClass("invisible");
+        setTimeout(() => {
+        editModalPreload();
+            $(`#editMovieModal`).removeClass(`blur`);
+            $(`#loadingBox`).addClass("invisible");
+        }, 2000);
     })
 };
 
@@ -82,41 +103,66 @@ function deleteMovie(id){
     fetch(`${dbURL}/${id}`, {
         method: `DELETE`
     }).then(() => {
-        setTimeout(() => {
-            //loading screen
-        }, 500);
-        setMovies();
+            setMovies();
     })
 }
 
-//function to update a movie object on the db
-function changeData(url, id, title, director, rating, genre, plot){
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+//function to open edit modal with pre-loaded values
+function editModalPreload(){
+        $("#editMovieTitle").val(selectedTitle)
+        $("#editMovieGenre").val(selectedGenre)
+        $("#editMovieRating").val(selectedRating)
+        $("#editMovieDirector").val(selectedDirector)
+        $("#editMovieDescription").val(selectedPlot)
+        $("#editRatingOutput").val(selectedRating)
+}
 
-    let raw = [
+function sendEditedMovie(){
+    let editedMovie = {
+        title: $("#editMovieTitle").val(),
+        genre: $("#editMovieGenre").val(),
+        rating: $("#editMovieRating").val(),
+        director: $("#editMovieDirector").val(),
+        plot: $("#editMovieDescription").val(),
+        id: selectedId,
+    }
+    changeData(editedMovie.id, editedMovie.title, editedMovie.director, editedMovie.rating, editedMovie.genre, editedMovie.plot)
+}
+
+
+//function to update a movie object on the db
+function changeData( id, title, director, rating, genre, plot){
+
+    let raw =
         {
-            "title": title,
-            "director": director,
-            "rating": rating,
-            "genre": genre,
-            "plot": plot,
-            "id": id
+            title: title,
+            director: director,
+            rating: rating,
+            genre: genre,
+            plot: plot,
+            id: id
         }
-    ];
+    ;
 
     let requestOptions = {
         method: 'PUT',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(raw),
     };
 
-    fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${id}`, requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
+    fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${selectedId}`, requestOptions)
+        .then( response => setMovies());
 }
+
+$("#editMovieSubmit").click(function(){
+    console.log("submitted")
+    sendEditedMovie();
+})
+
+
+
 
 //function to create a new movie object
 function addNewMovie(url, title, director, rating, genre, plot){
@@ -175,4 +221,11 @@ document.addEventListener("input",
         if (document.forms.addMovieForm == e.target.form)
             e.target.form.output.value =
                 parseFloat(e.target.form.movieRating.value);
+    }, true);
+
+document.addEventListener("input",
+    function(e) {
+        if (document.forms.editMovieForm == e.target.form)
+            e.target.form.output.value =
+                parseFloat(e.target.form.editMovieRating.value);
     }, true);
