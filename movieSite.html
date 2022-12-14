@@ -26,7 +26,7 @@
         </div>
         <hr class="styled my-3">
         <div class="row d-grid gap-2 col-6 mx-auto">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
+            <button id="addNewBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
                 Rate a new movie!
             </button>
         </div>
@@ -86,6 +86,13 @@
                 </button>
             </div>
 
+            <div class="col-auto">
+                <label for="resetSort" class="form-label invisible"> label</label> <br>
+                <button type="button" class="btn btn-danger" id="resetSort">
+                    Reset!
+                </button>
+            </div>
+
         </div>
 
     </div>
@@ -93,7 +100,13 @@
 
 <!--    modal for adding new movies-->
     <div class="modal fade" id="addMovieModal" tabindex="-1" aria-labelledby="addMovieModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="justify-content-center position-absolute top-50 start-50 invisible" style="z-index: 1095" id="fetchingPoster">
+            <div class="spinner-grow text-primary align-self-center ps-5" style="width: 3rem; height: 3rem;"  role="status">
+                <p class="fs-2 mt-2 ms-n5 align-bottom text-primary">Loading...</p>
+            </div>
+
+        </div>
+        <div class="modal-dialog" id="innerAddMovieModal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addModalLabel">Add a new movie to the list!</h5>
@@ -104,19 +117,23 @@
                         <div class="mb-3">
                             <label for="newMovieTitle" class="form-label">Movie Title:</label>
                             <div id="titleHelp" class="form-text">Enter the title of the movie you wish to add.</div>
-                            <input type="text" class="form-control" id="newMovieTitle" aria-describedby="newMovieTitle">
+                            <input type="text" class="form-control reset" id="newMovieTitle" aria-describedby="newMovieTitle">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newMovieYear" class="form-label">Movie Year:</label>
+                            <input type="text" class="form-control reset" id="newMovieYear" placeholder="Year is optional">
                         </div>
                         <div class="mb-3">
                             <button type="button" class="btn btn-outline-primary" id="autofill" >Check your title</button>
-                            <div id="autofillHelp" class="form-text">Click here to preview the result of your title and autofill Plot and Director</div>
+                            <div id="autofillHelp" class="form-text notUsed">Click here to preview the result of your title and autofill Plot and Director</div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 invisible" id="posterPreview">
                             <img id="previewImg" src="" class="img-fluid" alt="">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Movie Genre:</label>
                             <div id="genreHelp" class="form-text">Select a Genre for your movie</div>
-                            <select class="form-select" aria-label="Default select example" id="newMovieGenre">
+                            <select class="form-select reset" aria-label="Default select example" id="newMovieGenre">
                                 <option selected></option>
                                 <option value="Action">Action</option>
                                 <option value="Comedy">Comedy</option>
@@ -127,22 +144,25 @@
                                 <option value="Animated">Animated</option>
                             </select>
                         </div>
-                        <div class="mb-3 form-check">
+                        <div class="mb-3 form-check p-0">
                             <label for="movieRating" class="form-label">Rate your movie</label>
                             <div class="range-wrap">
-                                <input type="range" class="form-range" min="0" max="5" step="0.5" value="2.5" id="movieRating">
-                                <output name="output" class="badge rounded-pill bg-primary">2.5</output>
+                                <input type="range" class="form-range reset" min="0" max="5" step="0.5" value="2.5" id="movieRating">
+                                <output id="ratingBadge" name="output" class="badge rounded-pill bg-primary fs-6 rating25">2.5</output>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="newMovieDirector" class="form-label">Movie Director:</label>
                             <div id="directorHelp" class="form-text">Enter the director of the movie you wish to add.</div>
-                            <input type="text" class="form-control" id="newMovieDirector" aria-describedby="newMovieDirector">
+                            <input type="text" class="form-control reset" id="newMovieDirector" aria-describedby="newMovieDirector">
                         </div>
                         <div class="mb-3">
                             <label for="newMovieDescription" class="form-label">Movie Plot/Description:</label>
                             <div id="plotHelp" class="form-text">Describe the plot of the movie you wish to add.</div>
-                            <input type="text" class="form-control" id="newMovieDescription" aria-describedby="newMovieDescription">
+                            <input type="text" class="form-control reset" id="newMovieDescription" aria-describedby="newMovieDescription">
+                        </div>
+                        <div class="invisible">
+                            <input type="text" value="" id="imdbRating">
                         </div>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addMovieSubmit">Submit</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -190,11 +210,11 @@
                                 <option value="Animated">Animated</option>
                             </select>
                         </div>
-                        <div class="mb-3 form-check">
+                        <div class="mb-3 form-check p-0">
                             <label for="movieRating" class="form-label">Rate your movie</label>
                             <div class="range-wrap">
                                 <input type="range" class="form-range" min="0" max="5" step="0.5" value="2.5" id="editMovieRating">
-                                <output id="editRatingOutput" name="output" class="badge rounded-pill bg-primary"></output>
+                                <output id="editRatingOutput" name="output" class="badge rounded-pill bg-primary fs-6"></output>
                             </div>
                         </div>
                         <div class="mb-3">

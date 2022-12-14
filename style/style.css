@@ -10,3 +10,34 @@ hr.styled {
 .fonts{
     font-family: 'Merriweather', serif;
 }
+
+.ratingHalf{
+    margin-left: 30px;
+}
+.rating1{
+    margin-left: 85px;
+}
+.rating15{
+    margin-left: 121px;
+}
+.rating2{
+    margin-left: 172px;
+}
+.rating25{
+    margin-left: 210px;
+}
+.rating3{
+    margin-left: 263px;
+}
+.rating35{
+    margin-left: 301px;
+}
+.rating4{
+    margin-left: 352px;
+}
+.rating45{
+    margin-left: 390px;
+}
+.rating5{
+    margin-left: 442px;
+}
