@@ -13,8 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
-<!--    -BONUS-->
-<!--        -allow sorting by rating/title/genre-->
 
 <body class="fonts">
     <div class="justify-content-center position-absolute top-50 start-50 invisible" style="z-index: 1075" id="loadingBox">
@@ -37,12 +35,12 @@
             <p class="display-6 fw-bolder">My Rated Movies</p>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col-4">
                 <label for="movieSearchByTitle" class="form-label">Search by Title</label>
                 <input type="text" id="movieSearchByTitle" placeholder="Search For Movies by Title" class="w-100 form-control">
             </div>
 
-            <div class="col">
+            <div class="col-auto">
                 <label for="movieSearchByRating" class="form-label">Filter by Rating</label>
                 <select class="form-select" aria-label="Default select example" id="movieSearchByRating">
                     <option selected value="all" >All</option>
@@ -60,7 +58,7 @@
                 </select>
             </div>
 
-            <div class="col">
+            <div class="col-auto">
                 <label for="movieSearchByGenre" class="form-label">Filter by Genre</label>
                 <select class="form-select col" aria-label="Default select example" id="movieSearchByGenre">
                     <option selected value="all">All</option>
@@ -72,6 +70,20 @@
                     <option value="Drama">Drama</option>
                     <option value="Animated">Animated</option>
                 </select>
+            </div>
+
+            <div class="col-auto">
+                <label for="sortTitleType" class="form-label invisible"> label</label> <br>
+                <button type="button" class="btn btn-primary" id="sortTitleBtn" >
+                    Sort by Title<span class="badge bg-dark ms-2" id="sortTitleType"> - </span>
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <label for="sortRatingType" class="form-label invisible"> label</label> <br>
+                <button type="button" class="btn btn-primary" id="sortRatingBtn" >
+                    Sort by Rating<span class="badge bg-dark ms-2" id="sortRatingType"> - </span>
+                </button>
             </div>
 
         </div>

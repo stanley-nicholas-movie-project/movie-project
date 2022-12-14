@@ -9,6 +9,7 @@ let selectedPlot;
 let selectedRating;
 let selectedDirector;
 let movies = [];
+let randomOrder = [];
 let uniqueId;
 let sortedMovies;
 let searchRating = "all";
@@ -27,6 +28,7 @@ function setMovies(){
             let fData = data.filter((m) => {
                 return (m.id != null || m.id !== undefined);
             }); movies = fData;
+            randomOrder = movies;
             setUniqueId();
             return fData;
         }).then(() => {displayMovies(movies);
@@ -62,7 +64,7 @@ function displayMovies(movies){
 setMovies();
 
 
-//functions for sorting
+//functions for filtering
 
 function searchByTitle(searchValue){
     sortedMovies = movies;
@@ -110,6 +112,66 @@ $(`#movieSearchByGenre`).change(function(){
 $('#confirmDelete').click(function(){
     deleteMovie(selectedId);
 })
+
+$('#sortTitleBtn').click(function(){
+    sortByTitle();
+})
+
+
+let nameDefault = true;
+let nameA = false;
+let nameZ = false;
+
+
+//functions for sorting
+function sortByTitle(){
+    console.log("fired");
+    console.log(movies);
+    if (nameDefault){
+        $(`#sortTitleType`).text("A-Z")
+        nameDefault = false;
+        nameA = true;
+        movies = movies.sort((a,b) =>{
+            if (a.title.toLowerCase() < b.title.toLowerCase()){
+                return -1;
+            }
+            else if (a.title.toLowerCase() > b.title.toLowerCase()){
+                return +1;
+            }
+            else if (a.title.toLowerCase() === b.title.toLowerCase()){
+                return 0;
+            }
+        })
+    }
+    else if (nameA)
+        {
+            $(`#sortTitleType`).text("Z-A")
+            nameA = false;
+            nameZ = true;
+            movies = movies.sort((a,b) =>{
+                if (a.title.toLowerCase() > b.title.toLowerCase()){
+                    return -1;
+                }
+                else if (a.title.toLowerCase() < b.title.toLowerCase()){
+                    return +1;
+                }
+                else if (a.title.toLowerCase() === b.title.toLowerCase()){
+                    return 0;
+                }
+            })
+    }
+    else if (nameZ)
+        {
+            console.log(randomOrder)
+            $(`#sortTitleType`).text(" - ")
+            nameZ = false;
+            nameDefault = true;
+            movies = randomOrder;
+    }
+        searchByTitle($(`#movieSearchByTitle`).val());
+        console.log("finished")
+    console.log(movies)
+}
 
 
 //listener to grab info when clicking on a card
