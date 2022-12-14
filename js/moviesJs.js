@@ -16,7 +16,6 @@ let searchRating = "all";
 let searchGenre = "all";
 
 
-
 //only returns movies with IDs
 function setMovies(){
     $(`#moviesList`).addClass(`blur`);
@@ -36,6 +35,8 @@ function setMovies(){
     }, 2000);
 }
 
+
+//function to build the cards for the movies
 function displayMovies(movies){
     $(`#movieCards`).empty();
     movies.forEach((m) => {
@@ -61,11 +62,12 @@ function displayMovies(movies){
     })
     updateEventHandlers()};
 
+
+//displays cards on the page on load
 setMovies();
 
 
-//functions for filtering
-
+//function for filtering
 function searchByTitle(searchValue){
     sortedMovies = movies;
     if (searchRating !== "all"){
@@ -94,6 +96,8 @@ function searchByTitle(searchValue){
     };
 }
 
+
+//All page listeners
 $(`#movieSearchByTitle`).keyup(function(){
     searchByTitle($(this).val())
 })
@@ -108,25 +112,42 @@ $(`#movieSearchByGenre`).change(function(){
     searchByTitle($(`#movieSearchByTitle`).val());
 })
 
-
 $('#confirmDelete').click(function(){
     deleteMovie(selectedId);
 })
 
+$("#editMovieSubmit").click(function(){
+    sendEditedMovie();
+})
+
 $('#sortTitleBtn').click(function(){
+    resetSortByRating();
     sortByTitle();
 })
 
+$(`#sortRatingBtn`).click(function(){
+    resetSortByTitle();
+    sortByRating();
+})
 
+$("#addMovieSubmit").click(function(){
+    sendNewMovie();
+})
+
+
+//function for sorting by title
 let nameDefault = true;
 let nameA = false;
 let nameZ = false;
 
+function resetSortByTitle(){
+    nameDefault = true;
+    nameA = false;
+    nameZ = false;
+    $(`#sortTitleType`).text(" - ")
+}
 
-//functions for sorting
 function sortByTitle(){
-    console.log("fired");
-    console.log(movies);
     if (nameDefault){
         $(`#sortTitleType`).text("A-Z")
         nameDefault = false;
@@ -162,19 +183,85 @@ function sortByTitle(){
     }
     else if (nameZ)
         {
-            console.log(randomOrder)
             $(`#sortTitleType`).text(" - ")
             nameZ = false;
             nameDefault = true;
-            movies = randomOrder;
+            movies = movies.sort((a,b) =>{
+                if(a.id < b.id){
+                    return -1;
+                } else if (a.id > b.id){
+                    return +1;
+                }
+            })
     }
         searchByTitle($(`#movieSearchByTitle`).val());
-        console.log("finished")
-    console.log(movies)
 }
 
 
-//listener to grab info when clicking on a card
+//function for sorting by rating
+let ratingDefault = true;
+let ratingUp = false;
+let ratingDown = false;
+
+function resetSortByRating(){
+    ratingDefault = true;
+    ratingUp = false;
+    ratingDown = false;
+    $(`#sortRatingType`).text(" - ")
+}
+
+function sortByRating(){
+    if (ratingDefault){
+        $(`#sortRatingType`).text("5-1")
+        ratingDefault = false;
+        ratingDown = true;
+        movies = movies.sort((a,b) =>{
+            if (a.rating < b.rating){
+                return +1;
+            }
+            else if (a.rating > b.rating){
+                return -1;
+            }
+            else if (a.rating === b.rating){
+                return 0;
+            }
+        })
+    }
+    else if (ratingDown)
+    {
+        $(`#sortRatingType`).text("1-5")
+        ratingDown = false;
+        ratingUp = true;
+        movies = movies.sort((a,b) =>{
+            if (a.rating > b.rating){
+                return +1;
+            }
+            else if (a.rating < b.rating){
+                return -1;
+            }
+            else if (a.rating === b.rating){
+                return 0;
+            }
+        })
+    }
+    else if (ratingUp)
+    {
+        $(`#sortRatingType`).text(" - ")
+        ratingUp = false;
+        ratingDefault = true;
+        movies = movies.sort((a,b) =>{
+            if(a.id < b.id){
+                return -1;
+            } else if (a.id > b.id){
+                return +1;
+            }
+        })
+    }
+    searchByTitle($(`#movieSearchByTitle`).val());
+}
+
+
+//function that updates listeners for dynamically loaded buttons
 function updateEventHandlers(){
     $(`.click-me`).click(function(event){
         $(`#toDeleteTitle`).empty();
@@ -202,6 +289,7 @@ function updateEventHandlers(){
     })
 };
 
+
 //function to delete a movie
 function deleteMovie(id){
     fetch(`${dbURL}/${id}`, {
@@ -210,6 +298,7 @@ function deleteMovie(id){
         setMovies();
     })
 }
+
 
 //function to open edit modal with pre-loaded values
 function editModalPreload(){
@@ -221,6 +310,8 @@ function editModalPreload(){
     $("#editRatingOutput").val(selectedRating)
 }
 
+
+//function to send edits from the edit modal to the function that updates the server for that movie
 function sendEditedMovie(){
     let editedMovie = {
         title: $("#editMovieTitle").val(),
@@ -256,13 +347,13 @@ function changeData( id, title, director, rating, genre, plot){
         }).then(()=>{
         let raw =
             {
+                id: id,
+                poster: poster,
                 title: title,
                 director: director,
                 rating: rating,
                 genre: genre,
                 plot: plot,
-                id: id,
-                poster: poster,
             }
         ;
     
@@ -276,18 +367,8 @@ function changeData( id, title, director, rating, genre, plot){
     
         fetch(`https://pine-inexpensive-honeysuckle.glitch.me/movies/${selectedId}`, requestOptions)
             .then( response => setMovies());
-            
     })
-    
-    
-    
 }
-
-$("#editMovieSubmit").click(function(){
-    sendEditedMovie();
-})
-
-
 
 
 //function to create a new movie object
@@ -313,14 +394,13 @@ function addNewMovie(url, title, director, rating, genre, plot){
         .then(() => {
             let raw =
                 {
+                    id: uniqueId,
                     poster: poster,
                     title: title,
                     director: director,
                     rating: rating,
                     genre: genre,
                     plot: plot,
-                    id: uniqueId,
-                    
                 }
             ;
     
@@ -347,6 +427,8 @@ function addNewMovie(url, title, director, rating, genre, plot){
     
 }
 
+
+//function to send info from new movie modal to the function that updates the server creating the new movie object
 function sendNewMovie(){
     let newMovie = {
         title: $("#newMovieTitle").val(),
@@ -358,12 +440,8 @@ function sendNewMovie(){
     addNewMovie(dbURL, newMovie.title, newMovie.director, newMovie.rating, newMovie.genre, newMovie.plot)
 }
 
-$("#addMovieSubmit").click(function(){
-    console.log("submitted")
-    sendNewMovie();
-})
 
-//function for a uniqueId
+//function for generating a uniqueId
 function setUniqueId(){
     if (movies.length > 0){
         let temp = movies.filter((n) => n.id);
@@ -373,10 +451,10 @@ function setUniqueId(){
     else{
         uniqueId = 1;
     }
-    
 }
 
-//js for movie rating slider number
+
+//js for movie rating slider number badge
 document.addEventListener("input",
     function(e) {
         if (document.forms.addMovieForm == e.target.form)
